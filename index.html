@@ -33,7 +33,7 @@ h1 span{letter-spacing:.3em;margin-right:-.3em}
 <body>
 <div class="top">
 <div class="bag" role="img" aria-label="Luggage"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="13" rx="2.3"/><path d="M9 7V5a1.4 1.4 0 0 1 1.4-1.4h3.2A1.4 1.4 0 0 1 15 5v2"/><path d="M12 10v7"/><circle cx="8.4" cy="21.2" r="1" fill="currentColor" stroke="none"/><circle cx="15.6" cy="21.2" r="1" fill="currentColor" stroke="none"/></svg></div>
-<h1><span>YUVARAJ</span><svg class="flag" viewBox="0 0 36 24" role="img" aria-label="India"><rect width="36" height="8" fill="#ff9933"/><rect y="8" width="36" height="8" fill="#fff"/><rect y="16" width="36" height="8" fill="#138808"/></svg></h1>
+<h1><span id="nameText">YUVARAJ</span><svg class="flag" viewBox="0 0 36 24" role="img" aria-label="India"><rect width="36" height="8" fill="#ff9933"/><rect y="8" width="36" height="8" fill="#fff"/><rect y="16" width="36" height="8" fill="#138808"/></svg></h1>
 <p class="sub">Found this bag? Reach me directly — thank you.</p>
 </div>
 <div class="actions">
@@ -55,7 +55,7 @@ function callBackend(action,payload){
 // Detected from the scanning phone's own browser language — never asked,
 // never logged, just read once to pick which strings to show.
 const STR={
-  en:{sub:"Found this bag? Reach me directly — thank you.",email:"Email",location:"Location",
+  en:{name:"YUVARAJ",sub:"Found this bag? Reach me directly — thank you.",email:"Email",location:"Location",
     privacy:"This page logs a basic visit record (approximate city, device/browser type, screen size, timezone) so Yuvaraj knows it's being scanned. Nothing you type or share is sent unless you tap WhatsApp, Email, or Share location.",
     waText:"Hi! Thanks for connecting 🙏\nIf you found my bag, it would really help if you could:\n- Share your current location\n- Send a quick photo of it\n- Let me know how best to reach you\nThank you so much!",
     mailSubject:"Found your bag?",
@@ -63,7 +63,7 @@ const STR={
     locUnavailable:"Location unavailable on this device/browser.",locGetting:"Getting your location…",
     locSent:"Location sent. Thank you!",locFail:"Could not confirm sending. Please try WhatsApp or Email instead.",
     locDenied:"Location access denied. Try WhatsApp or Email instead.",locError:"Could not get your location. Try again or use WhatsApp/Email."},
-  zh:{sub:"找到這個行李箱了嗎?請直接聯絡我,謝謝您!",email:"電郵",location:"位置",
+  zh:{name:"尤瓦拉吉",sub:"找到這個行李箱了嗎?請直接聯絡我,謝謝您!",email:"電郵",location:"位置",
     privacy:"此頁面會記錄基本的訪問資訊(大約城市、裝置/瀏覽器類型、螢幕大小、時區),讓 Yuvaraj 知道這個標籤正被掃描。除非您點擊 WhatsApp、電郵或分享位置,否則不會傳送您輸入或分享的任何內容。",
     waText:"您好!感謝您與我聯絡 🙏\n如果您找到了我的行李,麻煩您:\n- 分享您目前的位置\n- 傳送一張照片\n- 告訴我最方便聯絡您的方式\n非常感謝!",
     mailSubject:"找到您的行李了嗎?",
@@ -71,7 +71,7 @@ const STR={
     locUnavailable:"此裝置/瀏覽器無法取得位置。",locGetting:"正在取得您的位置…",
     locSent:"位置已傳送,謝謝您!",locFail:"無法確認是否已傳送,請改用 WhatsApp 或電郵。",
     locDenied:"位置存取遭拒,請改用 WhatsApp 或電郵。",locError:"無法取得您的位置,請重試或改用 WhatsApp/電郵。"},
-  th:{sub:"เจอกระเป๋าใบนี้ไหม? ติดต่อฉันได้โดยตรง ขอบคุณมาก",email:"อีเมล",location:"ตำแหน่ง",
+  th:{name:"ยุวราช",sub:"เจอกระเป๋าใบนี้ไหม? ติดต่อฉันได้โดยตรง ขอบคุณมาก",email:"อีเมล",location:"ตำแหน่ง",
     privacy:"หน้านี้จะบันทึกข้อมูลการเข้าชมพื้นฐาน (เมืองโดยประมาณ ประเภทอุปกรณ์/เบราว์เซอร์ ขนาดหน้าจอ เขตเวลา) เพื่อให้ Yuvaraj ทราบว่าแท็กนี้ถูกสแกน ข้อมูลที่คุณพิมพ์หรือแชร์จะไม่ถูกส่งไป เว้นแต่คุณจะแตะ WhatsApp อีเมล หรือแชร์ตำแหน่ง",
     waText:"สวัสดี ขอบคุณที่ติดต่อมา 🙏\nถ้าคุณเจอกระเป๋าของฉัน จะเป็นประโยชน์มากถ้าคุณ:\n- แชร์ตำแหน่งปัจจุบันของคุณ\n- ส่งรูปถ่ายกระเป๋าสั้นๆ ให้ดู\n- บอกฉันว่าติดต่อคุณกลับทางไหนดีที่สุด\nขอบคุณมากๆ!",
     mailSubject:"เจอกระเป๋าของฉันหรือเปล่า?",
@@ -86,15 +86,17 @@ const STR={
 const LANGS=['en','zh','th'];
 const HTML_LANG={en:'en',zh:'zh-Hant',th:'th'};
 let langIdx=0,t=STR[LANGS[0]];
-const subEl=document.querySelector('.sub'),emailLabelEl=document.querySelector('.email .label'),locationLabelEl=document.querySelector('.location .label');
+const nameEl=document.getElementById('nameText'),subEl=document.querySelector('.sub'),emailLabelEl=document.querySelector('.email .label'),locationLabelEl=document.querySelector('.location .label');
 const waLink=document.querySelector('.action.whatsapp'),emailLink=document.querySelector('.action.email');
 const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-[subEl,emailLabelEl,locationLabelEl].forEach(el=>{el.style.transition='opacity .25s ease'});
+const fadeEls=[nameEl,subEl,emailLabelEl,locationLabelEl];
+fadeEls.forEach(el=>{el.style.transition='opacity .25s ease'});
 
 function applyLang(key,animate){
   t=STR[key];
   document.documentElement.lang=HTML_LANG[key];
   const render=()=>{
+    nameEl.textContent=t.name;
     subEl.textContent=t.sub;
     emailLabelEl.textContent=t.email;
     locationLabelEl.textContent=t.location;
@@ -102,8 +104,8 @@ function applyLang(key,animate){
     emailLink.href='mailto:yuvarajstenny@gmail.com?subject='+encodeURIComponent(t.mailSubject)+'&body='+encodeURIComponent(t.mailBody);
   };
   if(!animate||reduceMotion){render();return;}
-  [subEl,emailLabelEl,locationLabelEl].forEach(el=>el.style.opacity=0);
-  setTimeout(()=>{render();[subEl,emailLabelEl,locationLabelEl].forEach(el=>el.style.opacity=1);},260);
+  fadeEls.forEach(el=>el.style.opacity=0);
+  setTimeout(()=>{render();fadeEls.forEach(el=>el.style.opacity=1);},260);
 }
 applyLang(LANGS[0],false);
 if(!reduceMotion){
