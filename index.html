@@ -91,12 +91,15 @@
 // itself is hosted separately (GitHub Pages) specifically so visitors never
 // see Google's "created by an Apps Script user" banner, which only appears
 // on pages Apps Script serves directly.
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbyQBFXGwLzB88f11JbW3xr6CZQND2Kr1ODacFNq4102r6y6gJZ9wbtAiu861gr6ph9cxA/exec';
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbyAU0IPydr2QR0_Kql_DI9ELNHGk8tkWXHMzshtYtO2FfLsNfoPb4mk_OsJdDDC2MVzMw/exec';
 
-// Content-Type: text/plain keeps this a CORS "simple request" (no preflight
-// OPTIONS call, which Apps Script has no way to answer).
+// Must be GET, not POST: Apps Script's cross-origin response only carries a
+// usable Access-Control-Allow-Origin header on the GET path (verified by
+// testing both directly against the deployment) — a POST here would 405 once
+// the browser follows Apps Script's own redirect.
 function callBackend(action,payload){
-  return fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,payload})}).then(r=>r.json());
+  const url=BACKEND_URL+'?action='+encodeURIComponent(action)+'&payload='+encodeURIComponent(JSON.stringify(payload));
+  return fetch(url).then(r=>r.json());
 }
 
 const labels={whatsapp:'WhatsApp',instagram:'Instagram',email:'Email'};
