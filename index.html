@@ -42,13 +42,59 @@ h1 span{letter-spacing:.3em;margin-right:-.3em}
 <button class="action location" id="locBtn" type="button"><span class="tile"><svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="label">Location</span></button>
 </div>
 <p id="locStatus" role="status" aria-live="polite"></p>
-<button type="button" class="foot" aria-label="Privacy info" onclick="alert('This page logs a basic visit record (approximate city, device/browser type, screen size, timezone) so Yuvaraj knows it\'s being scanned. Nothing you type or share is sent unless you tap WhatsApp, Email, or Share location.')">ⓘ</button>
+<button type="button" class="foot" id="privacyBtn" aria-label="Privacy info">ⓘ</button>
 <script>
 const BACKEND_URL='https://script.google.com/macros/s/AKfycbyEh-RwMFBA9HO05TdU8ye2r2rjPPd81PJ_xSe4sZZq4kp5hnaO1U3EOpxYehufIINiWA/exec';
 function callBackend(action,payload){
   const url=BACKEND_URL+'?action='+encodeURIComponent(action)+'&payload='+encodeURIComponent(JSON.stringify(payload));
   return fetch(url).then(r=>r.json());
 }
+
+// Three languages only, picked for where this tag is likely to travel:
+// English (default/India), Traditional Chinese (Hong Kong/Taiwan), Thai.
+// Detected from the scanning phone's own browser language — never asked,
+// never logged, just read once to pick which strings to show.
+const STR={
+  en:{sub:"Found this bag? Reach me directly — thank you.",email:"Email",location:"Location",
+    privacy:"This page logs a basic visit record (approximate city, device/browser type, screen size, timezone) so Yuvaraj knows it's being scanned. Nothing you type or share is sent unless you tap WhatsApp, Email, or Share location.",
+    waText:"Hi! Thanks for connecting 🙏\nIf you found my bag, it would really help if you could:\n- Share your current location\n- Send a quick photo of it\n- Let me know how best to reach you\nThank you so much!",
+    mailSubject:"Found your bag?",
+    mailBody:"Hi Yuvaraj,\n\nI think I found your bag. Here is what I can share:\n- Location:\n- Photo: (attached)\n- My contact:\n\nThanks!",
+    locUnavailable:"Location unavailable on this device/browser.",locGetting:"Getting your location…",
+    locSent:"Location sent. Thank you!",locFail:"Could not confirm sending. Please try WhatsApp or Email instead.",
+    locDenied:"Location access denied. Try WhatsApp or Email instead.",locError:"Could not get your location. Try again or use WhatsApp/Email."},
+  zh:{sub:"找到這個行李箱了嗎?請直接聯絡我,謝謝您!",email:"電郵",location:"位置",
+    privacy:"此頁面會記錄基本的訪問資訊(大約城市、裝置/瀏覽器類型、螢幕大小、時區),讓 Yuvaraj 知道這個標籤正被掃描。除非您點擊 WhatsApp、電郵或分享位置,否則不會傳送您輸入或分享的任何內容。",
+    waText:"您好!感謝您與我聯絡 🙏\n如果您找到了我的行李,麻煩您:\n- 分享您目前的位置\n- 傳送一張照片\n- 告訴我最方便聯絡您的方式\n非常感謝!",
+    mailSubject:"找到您的行李了嗎?",
+    mailBody:"您好 Yuvaraj,\n\n我想我找到了您的行李。以下是我可以提供的資訊:\n- 位置:\n- 照片:(附件)\n- 我的聯絡方式:\n\n謝謝!",
+    locUnavailable:"此裝置/瀏覽器無法取得位置。",locGetting:"正在取得您的位置…",
+    locSent:"位置已傳送,謝謝您!",locFail:"無法確認是否已傳送,請改用 WhatsApp 或電郵。",
+    locDenied:"位置存取遭拒,請改用 WhatsApp 或電郵。",locError:"無法取得您的位置,請重試或改用 WhatsApp/電郵。"},
+  th:{sub:"เจอกระเป๋าใบนี้ไหม? ติดต่อฉันได้โดยตรง ขอบคุณมาก",email:"อีเมล",location:"ตำแหน่ง",
+    privacy:"หน้านี้จะบันทึกข้อมูลการเข้าชมพื้นฐาน (เมืองโดยประมาณ ประเภทอุปกรณ์/เบราว์เซอร์ ขนาดหน้าจอ เขตเวลา) เพื่อให้ Yuvaraj ทราบว่าแท็กนี้ถูกสแกน ข้อมูลที่คุณพิมพ์หรือแชร์จะไม่ถูกส่งไป เว้นแต่คุณจะแตะ WhatsApp อีเมล หรือแชร์ตำแหน่ง",
+    waText:"สวัสดี ขอบคุณที่ติดต่อมา 🙏\nถ้าคุณเจอกระเป๋าของฉัน จะเป็นประโยชน์มากถ้าคุณ:\n- แชร์ตำแหน่งปัจจุบันของคุณ\n- ส่งรูปถ่ายกระเป๋าสั้นๆ ให้ดู\n- บอกฉันว่าติดต่อคุณกลับทางไหนดีที่สุด\nขอบคุณมากๆ!",
+    mailSubject:"เจอกระเป๋าของฉันหรือเปล่า?",
+    mailBody:"สวัสดี Yuvaraj\n\nฉันคิดว่าเจอกระเป๋าของคุณแล้ว นี่คือสิ่งที่ฉันแชร์ได้:\n- ตำแหน่ง:\n- รูปถ่าย: (แนบมาด้วย)\n- ช่องทางติดต่อของฉัน:\n\nขอบคุณ!",
+    locUnavailable:"อุปกรณ์/เบราว์เซอร์นี้ไม่รองรับตำแหน่ง",locGetting:"กำลังรับตำแหน่งของคุณ…",
+    locSent:"ส่งตำแหน่งแล้ว ขอบคุณมาก!",locFail:"ไม่สามารถยืนยันการส่งได้ กรุณาลองใช้ WhatsApp หรืออีเมลแทน",
+    locDenied:"การเข้าถึงตำแหน่งถูกปฏิเสธ กรุณาใช้ WhatsApp หรืออีเมลแทน",locError:"ไม่สามารถรับตำแหน่งของคุณได้ กรุณาลองใหม่หรือใช้ WhatsApp/อีเมล"}
+};
+const LANG=(function(){
+  const l=(navigator.language||'en').toLowerCase();
+  if(l.startsWith('zh'))return'zh';
+  if(l.startsWith('th'))return'th';
+  return'en';
+})();
+const t=STR[LANG];
+document.documentElement.lang=LANG==='zh'?'zh-Hant':LANG==='th'?'th':'en';
+document.querySelector('.sub').textContent=t.sub;
+document.querySelector('.email .label').textContent=t.email;
+document.querySelector('.location .label').textContent=t.location;
+document.querySelector('.action.whatsapp').href='https://wa.me/919894012736?text='+encodeURIComponent(t.waText);
+document.querySelector('.action.email').href='mailto:yuvarajstenny@gmail.com?subject='+encodeURIComponent(t.mailSubject)+'&body='+encodeURIComponent(t.mailBody);
+document.getElementById('privacyBtn').addEventListener('click',()=>alert(t.privacy));
+
 (function logScan(){
   const base={device:navigator.userAgent.slice(0,300),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',referrer:document.referrer||'',screen:screen.width+'x'+screen.height,touchPoints:navigator.maxTouchPoints||0};
   fetch('https://ipapi.co/json/').then(r=>r.json()).then(geo=>{
@@ -57,15 +103,15 @@ function callBackend(action,payload){
 })();
 const locBtn=document.getElementById('locBtn'),locStatus=document.getElementById('locStatus');
 locBtn.addEventListener('click',()=>{
-  if(!window.isSecureContext||!navigator.geolocation){locStatus.textContent='Location unavailable on this device/browser.';return;}
-  locBtn.disabled=true;locStatus.textContent='Getting your location…';
+  if(!window.isSecureContext||!navigator.geolocation){locStatus.textContent=t.locUnavailable;return;}
+  locBtn.disabled=true;locStatus.textContent=t.locGetting;
   navigator.geolocation.getCurrentPosition(pos=>{
     callBackend('locationPing',{lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy})
-      .then(()=>{locStatus.textContent='Location sent. Thank you!';})
-      .catch(()=>{locStatus.textContent='Could not confirm sending. Please try WhatsApp or Email instead.';})
+      .then(()=>{locStatus.textContent=t.locSent;})
+      .catch(()=>{locStatus.textContent=t.locFail;})
       .finally(()=>{locBtn.disabled=false;});
   },err=>{
-    locStatus.textContent=err.code===1?'Location access denied. Try WhatsApp or Email instead.':'Could not get your location. Try again or use WhatsApp/Email.';
+    locStatus.textContent=err.code===1?t.locDenied:t.locError;
     locBtn.disabled=false;
   },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 });
