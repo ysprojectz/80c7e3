@@ -44,7 +44,7 @@ h1 span{letter-spacing:.3em;margin-right:-.3em}
 <p id="locStatus" role="status" aria-live="polite"></p>
 <button type="button" class="foot" aria-label="Privacy info" onclick="alert('This page logs a basic visit record (approximate city, device/browser type, screen size, timezone) so Yuvaraj knows it\'s being scanned. Nothing you type or share is sent unless you tap WhatsApp, Email, or Share location.')">ⓘ</button>
 <script>
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbzOHkdZcueRcUxPbJRyGM6K5GS9T3_51CgNB94UZHFDKBWHKtCzJ26EOCt9gTAY_GjgEQ/exec';
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbyEh-RwMFBA9HO05TdU8ye2r2rjPPd81PJ_xSe4sZZq4kp5hnaO1U3EOpxYehufIINiWA/exec';
 function callBackend(action,payload){
   const url=BACKEND_URL+'?action='+encodeURIComponent(action)+'&payload='+encodeURIComponent(JSON.stringify(payload));
   return fetch(url).then(r=>r.json());
