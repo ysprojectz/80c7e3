@@ -28,7 +28,7 @@
 <button class="action" data-channel="email" aria-label="Leave your email so Yuvaraj can reply"><span class="tile email"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span>Email</button>
 </div>
 <p class="privacy">Private contact · Your kindness helps this item find its way home.</p>
-<p class="preview" id="statusNote">This page logs a basic visit record (approximate city, device/browser type, timezone) so Yuvaraj knows it's being scanned. Nothing you type is sent unless you fill in the form below and agree to send it.</p>
+<p class="preview" id="statusNote">This page logs a basic visit record (approximate city, device/browser type, screen size, timezone) so Yuvaraj knows it's being scanned. Nothing you type is sent unless you fill in the form below and agree to send it.</p>
 </main>
 <dialog id="messageDialog" aria-labelledby="messageTitle">
 <form id="reportForm">
@@ -46,7 +46,7 @@
 <button type="button" class="suggestion" id="addLocation">Attach my current location</button><button type="button" class="suggestion" id="removeLocation" hidden>Remove attached location</button><div hidden aria-hidden="true"><label for="website">Leave blank</label><input id="website" tabindex="-1" autocomplete="off"></div>
 <section class="consent-section" aria-label="Permission to share">
 <p class="fine">This report is used to help Yuvaraj recover his item and contact you if you leave reply details. It is stored privately in a Google Sheet and emailed to him. You can leave out contact details and location. Avoid adding sensitive information.</p>
-<label class="consent-choice"><input type="checkbox" id="deviceConsent"><span>I also agree to include basic browser and timezone information to help troubleshoot the report (optional).</span></label>
+<label class="consent-choice"><input type="checkbox" id="deviceConsent"><span>I also agree to include basic device information (browser, screen size, language, timezone, connection type) to help troubleshoot the report (optional).</span></label>
 <label class="consent-choice"><input type="checkbox" id="reportConsent" required><span>I agree to send my message, chosen contact preference, submission time, and any contact details or location I choose to share to Yuvaraj for this purpose.</span></label>
 <p class="fine">You may close this window without sending a report. To request deletion of a submitted report or withdraw permission for further use, send a message here marked "Privacy request" and include your report reference. Yuvaraj may need to verify the request before acting.</p>
 </section>
@@ -110,7 +110,7 @@ const contacts={whatsapp:'',instagram:'',email:''};
 // generic device/timezone info. Runs once per page load, independent of
 // the report form below.
 (function logScan(){
-  const base={device:navigator.userAgent.slice(0,300),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',referrer:document.referrer||''};
+  const base={device:navigator.userAgent.slice(0,300),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',referrer:document.referrer||'',screen:screen.width+'x'+screen.height,touchPoints:navigator.maxTouchPoints||0};
   fetch('https://ipapi.co/json/').then(r=>r.json()).then(geo=>{
     callBackend('logScan',Object.assign({},base,{
       approxLocation:[geo.city,geo.region,geo.country_name].filter(Boolean).join(', ')
@@ -132,7 +132,8 @@ function reportId(){if(crypto.randomUUID)return crypto.randomUUID();const bytes=
 function confirmation(hasContact){return 'Thanks for connecting with Yuvaraj. Your time and kindness are greatly appreciated.'+(hasContact?' Yuvaraj will get back to you shortly using the contact details you provided.':'');}
 document.getElementById('reportForm').addEventListener('submit',event=>{event.preventDefault();if(sending)return;const status=document.getElementById('messageStatus');if(!message.value.trim()){status.textContent='Please choose a message or write a few words.';message.focus();return;}if(!document.getElementById('reportConsent').checked){status.textContent='Please read the sharing notice and tick the box if you agree. You may close this window without sending anything.';document.getElementById('reportConsent').focus();return;}
 const deviceConsent=document.getElementById('deviceConsent').checked;
-const payload={preference:channel,message:message.value.trim(),contact:replyContact.value.trim(),location:position?{...position}:null,locationConsent:Boolean(position),reportConsent:true,noticeVersion:'report-consent-v1',deviceConsent,browser:deviceConsent?navigator.userAgent.slice(0,500):'',timezone:deviceConsent?(Intl.DateTimeFormat().resolvedOptions().timeZone||''):'',website:document.getElementById('website').value};const signature=JSON.stringify(payload);if(!pendingReport||pendingReport.signature!==signature)pendingReport={signature,id:reportId()};payload.id=pendingReport.id;
+const deviceInfo=deviceConsent?{browser:navigator.userAgent.slice(0,500),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',language:navigator.language||'',screen:screen.width+'x'+screen.height,pixelRatio:window.devicePixelRatio||1,cpuCores:navigator.hardwareConcurrency||0,touchPoints:navigator.maxTouchPoints||0,connection:(navigator.connection&&navigator.connection.effectiveType)||''}:{};
+const payload=Object.assign({preference:channel,message:message.value.trim(),contact:replyContact.value.trim(),location:position?{...position}:null,locationConsent:Boolean(position),reportConsent:true,noticeVersion:'report-consent-v2',deviceConsent,website:document.getElementById('website').value},deviceInfo);const signature=JSON.stringify(payload);if(!pendingReport||pendingReport.signature!==signature)pendingReport={signature,id:reportId()};payload.id=pendingReport.id;
 sending=true;sendButton.disabled=true;status.textContent='Saving your report…';
 callBackend('submitReport',payload).then(result=>{sending=false;sendButton.disabled=false;if(!result||result.saved!==true){status.textContent='Could not confirm saving. Please try again. Your message has been kept.';return;}status.textContent=confirmation(Boolean(payload.contact))+' Your report reference: '+result.reportId;pendingReport=null;message.value='';replyContact.value='';contacts[channel]='';position=null;document.getElementById('reportConsent').checked=false;document.getElementById('deviceConsent').checked=false;updateLocation();document.querySelectorAll('[aria-pressed]').forEach(button=>button.setAttribute('aria-pressed','false'));}).catch(()=>{sending=false;sendButton.disabled=false;status.textContent='Could not confirm saving. Please try again in a moment. Your message has been kept.';});
 });
