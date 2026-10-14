@@ -80,19 +80,35 @@ const STR={
     locSent:"ส่งตำแหน่งแล้ว ขอบคุณมาก!",locFail:"ไม่สามารถยืนยันการส่งได้ กรุณาลองใช้ WhatsApp หรืออีเมลแทน",
     locDenied:"การเข้าถึงตำแหน่งถูกปฏิเสธ กรุณาใช้ WhatsApp หรืออีเมลแทน",locError:"ไม่สามารถรับตำแหน่งของคุณได้ กรุณาลองใหม่หรือใช้ WhatsApp/อีเมล"}
 };
-const LANG=(function(){
-  const l=(navigator.language||'en').toLowerCase();
-  if(l.startsWith('zh'))return'zh';
-  if(l.startsWith('th'))return'th';
-  return'en';
-})();
-const t=STR[LANG];
-document.documentElement.lang=LANG==='zh'?'zh-Hant':LANG==='th'?'th':'en';
-document.querySelector('.sub').textContent=t.sub;
-document.querySelector('.email .label').textContent=t.email;
-document.querySelector('.location .label').textContent=t.location;
-document.querySelector('.action.whatsapp').href='https://wa.me/919894012736?text='+encodeURIComponent(t.waText);
-document.querySelector('.action.email').href='mailto:yuvarajstenny@gmail.com?subject='+encodeURIComponent(t.mailSubject)+'&body='+encodeURIComponent(t.mailBody);
+// Fixed order, always starting with English, looping on a timer — the
+// phone's own language setting is deliberately not used here. "WhatsApp"
+// stays as-is in every pass since it's a brand name, not translated text.
+const LANGS=['en','zh','th'];
+const HTML_LANG={en:'en',zh:'zh-Hant',th:'th'};
+let langIdx=0,t=STR[LANGS[0]];
+const subEl=document.querySelector('.sub'),emailLabelEl=document.querySelector('.email .label'),locationLabelEl=document.querySelector('.location .label');
+const waLink=document.querySelector('.action.whatsapp'),emailLink=document.querySelector('.action.email');
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+[subEl,emailLabelEl,locationLabelEl].forEach(el=>{el.style.transition='opacity .25s ease'});
+
+function applyLang(key,animate){
+  t=STR[key];
+  document.documentElement.lang=HTML_LANG[key];
+  const render=()=>{
+    subEl.textContent=t.sub;
+    emailLabelEl.textContent=t.email;
+    locationLabelEl.textContent=t.location;
+    waLink.href='https://wa.me/919894012736?text='+encodeURIComponent(t.waText);
+    emailLink.href='mailto:yuvarajstenny@gmail.com?subject='+encodeURIComponent(t.mailSubject)+'&body='+encodeURIComponent(t.mailBody);
+  };
+  if(!animate||reduceMotion){render();return;}
+  [subEl,emailLabelEl,locationLabelEl].forEach(el=>el.style.opacity=0);
+  setTimeout(()=>{render();[subEl,emailLabelEl,locationLabelEl].forEach(el=>el.style.opacity=1);},260);
+}
+applyLang(LANGS[0],false);
+if(!reduceMotion){
+  setInterval(()=>{langIdx=(langIdx+1)%LANGS.length;applyLang(LANGS[langIdx],true);},3200);
+}
 document.getElementById('privacyBtn').addEventListener('click',()=>alert(t.privacy));
 
 (function logScan(){
