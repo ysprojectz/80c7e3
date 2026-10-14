@@ -11,8 +11,7 @@ html,body{height:100%;overscroll-behavior:none}
 body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#fff;height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 7vh) 22px calc(env(safe-area-inset-bottom) + 22px);text-align:center;
 background:linear-gradient(135deg,#ff7a59,#c2487a 45%,#5b3bd6 85%);background-size:220% 220%;animation:drift 14s ease-in-out infinite}
 @keyframes drift{0%,100%{background-position:0% 30%}50%{background-position:100% 70%}}
-.bag{margin:0 0 10px;display:grid;place-items:center;width:clamp(46px,13vw,58px);height:clamp(46px,13vw,58px);border-radius:16px;background:#ffffff22;border:1px solid #ffffff3a}
-.bag svg{width:55%;height:55%;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.bag{margin:0 0 6px;display:grid;place-items:center;width:clamp(60px,17vw,78px);height:clamp(60px,17vw,78px);font-size:clamp(36px,10vw,48px);line-height:1;filter:drop-shadow(0 8px 18px #00000030)}
 h1{display:flex;align-items:center;justify-content:center;gap:9px;margin:0 0 6px;font-size:clamp(19px,6vw,25px);font-weight:800;letter-spacing:.5px;text-shadow:0 2px 14px #00000030}
 .flag{width:26px;height:17px;border-radius:3px;box-shadow:0 0 0 1px #ffffff40}
 .sub{margin:0;font-size:clamp(13px,3.8vw,15px);color:#ffffffd0;max-width:320px}
@@ -31,7 +30,7 @@ h1{display:flex;align-items:center;justify-content:center;gap:9px;margin:0 0 6px
 </style>
 </head>
 <body>
-<div class="bag"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="14" rx="3"/><path d="M9 6V4h6v2M9 10v6m6-6v6M8 20v1m8-1v1"/></svg></div>
+<div class="bag" role="img" aria-label="Luggage">🧳</div>
 <h1><span>YUVARAJ</span><svg class="flag" viewBox="0 0 36 24" role="img" aria-label="India"><rect width="36" height="8" fill="#ff9933"/><rect y="8" width="36" height="8" fill="#fff"/><rect y="16" width="36" height="8" fill="#138808"/></svg></h1>
 <p class="sub">Found this bag? Tap below to reach me directly — thank you!</p>
 <div class="actions">

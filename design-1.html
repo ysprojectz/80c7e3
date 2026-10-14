@@ -10,8 +10,7 @@
 html,body{height:100%;overscroll-behavior:none}
 body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#edf4ff;background:radial-gradient(ellipse at 20% 15%,#1d3b4266,transparent 55%),radial-gradient(ellipse at 85% 90%,#3a2f5e55,transparent 55%),#0b111c;display:flex;flex-direction:column;align-items:center;height:100dvh;overflow:hidden;padding:calc(env(safe-area-inset-top) + 7vh) max(22px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 22px) max(22px,env(safe-area-inset-left));text-align:center}
 .top{width:100%;max-width:420px}
-.bag{margin:0 auto clamp(12px,3.5vw,18px);display:grid;place-items:center;width:clamp(50px,14vw,64px);height:clamp(50px,14vw,64px);border-radius:19px;background:linear-gradient(135deg,#b1edd117,#95bbf209);color:#aee3d3;border:1px solid #d5ecff25}
-.bag svg{width:55%;height:55%}
+.bag{margin:0 auto clamp(10px,3vw,16px);display:grid;place-items:center;width:clamp(64px,18vw,84px);height:clamp(64px,18vw,84px);font-size:clamp(36px,10vw,50px);line-height:1;filter:drop-shadow(0 8px 18px #0006)}
 h1{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 6px;font-size:clamp(19px,6vw,25px);font-weight:750;letter-spacing:.6px}
 .flag{width:30px;height:20px;border-radius:3px;box-shadow:0 0 0 1px #ffffff29}
 .sub{margin:0;color:#93a3b5;font-size:clamp(13px,3.8vw,14.5px);line-height:1.5}
@@ -32,7 +31,7 @@ h1{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 6p
 </head>
 <body>
 <div class="top">
-<div class="bag"><svg viewBox="0 0 24 24" aria-hidden="true" stroke="currentColor" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="6" width="14" height="14" rx="3"/><path d="M9 6V4h6v2M9 10v6m6-6v6M8 20v1m8-1v1"/></svg></div>
+<div class="bag" role="img" aria-label="Luggage">🧳</div>
 <h1><span>YUVARAJ</span><svg class="flag" viewBox="0 0 36 24" role="img" aria-label="India"><rect width="36" height="8" fill="#ff9933"/><rect y="8" width="36" height="8" fill="#fff"/><rect y="16" width="36" height="8" fill="#138808"/></svg></h1>
 <p class="sub">Found this bag? Reach me directly — thank you.</p>
 </div>
